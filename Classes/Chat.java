@@ -13,7 +13,34 @@ public class Chat {
 		m.start();
 		System.out.println("Client Thread Started");
 
-	}
+	    System.out.println("Client Thread Started");
+		
+        try {
+            System.out.println("My ip: " + getIp());
+        }
+        catch (Exception e){
 
+        }
+
+    }
+
+    public static String getIp() throws Exception {
+        URL findIP = new URL("http://checkip.amazonaws.com");
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(
+                    findIP.openStream()));
+            String ip = in.readLine();
+            return ip;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
 
