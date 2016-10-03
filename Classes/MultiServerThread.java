@@ -13,11 +13,12 @@ public class MultiServerThread extends Thread{
 	 public void run() {
 		 System.out.println("Trying to read the message");
 		 try {
-			 InputStream is = socket.getInputStream();
-			 InputStreamReader isr = new InputStreamReader(is);
-			 BufferedReader br = new BufferedReader(isr);
-			 String number = br.readLine();
-			 System.out.println("Message received from client is "+number);
+			InputStream is = socket.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String message = br.readLine();
+			System.out.println("Message received from client " + socket.getRemoteSocketAddress().toString() + " is: " + message);
+			 
 		 } catch(Exception e){
 			 System.out.println("Message reader failed");
 		 }
