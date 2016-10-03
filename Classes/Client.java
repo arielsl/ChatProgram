@@ -39,7 +39,7 @@ public class Client extends Thread{
    
              bw.write(message);
              bw.flush();
-             System.out.println("Message sent to the server : ");
+             System.out.println("Message sent to the server " + s.getRemoteSocketAddress().toString() + ": " + message);
          	}
          catch (IOException e){
              System.out.println("Client creation and connection failed");
