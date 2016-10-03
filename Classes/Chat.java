@@ -1,37 +1,91 @@
 package chat;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
 public class Chat {
+	
+	public static String ip;
+	public static int port;
+	static ArrayList<Socket> socketList = new ArrayList<Socket>();
 
 	public static void main(String[] args) {
-		int port = Integer.parseInt(args[0]);
+		port = Integer.parseInt(args[0]);
 		Thread t = new Server(port);
 		t.start();
-		System.out.println("Server Thread started");
-		//Enter the IP here
-		//Host is given in the arguments as 6606
-		Thread m = new Client(6606 , "localhost");
-		m.start();
-		System.out.println("Client Thread Started");
-
-	    System.out.println("Client Thread Started");
+		try {
+			getIp();
+		} catch (Exception e) {
+			System.out.println("Could not retreat IP");
+		}
+		getPort();
+		System.out.println("Server created at address: " + ip + ":" + port);
 		
-        try {
-            System.out.println("My ip: " + getIp());
-        }
-        catch (Exception e){
-
-        }
+		int choice = 10;
+		while(choice != 8){
+			System.out.println("Select a command with the given number: ");
+			System.out.println("1. Help");
+			System.out.println("2. My ip");
+			System.out.println("3. My port");
+			System.out.println("4. Connect");
+			System.out.println("5. List");
+			System.out.println("6. Terminate");
+			System.out.println("7. Send");
+			System.out.println("8. Exit");
+			Scanner sc = new Scanner(System.in);
+			choice = sc.nextInt();
+			switch(choice){
+			case 1: getHelp();
+				break;
+			case 2: try {
+					getIp();
+				} catch (Exception e) {
+					System.out.println("Could not retreat IP");
+				}
+				break;
+			case 3: getPort();
+				break;
+			case 4: connect();
+				break;
+			case 5: getList();
+				break;
+			case 6: terminate();
+				break;
+			case 7: send();
+				break;
+			case 8: sc.close(); 
+				endProgram();
+				break;
+			default: System.out.println("Not a valid command.");
+				break;
+			
+			}
+		}
+		
 
     }
+	
+	public static void getHelp(){
+		System.out.println("Short description of all methods available: ");
+		System.out.println("Help: Display information about the available user interface options or command manual.");
+		System.out.println("My ip: Display the IP address of this process.");
+		System.out.println("My port: Display the port on which this process is listening for incoming connections.");
+		System.out.println("Connect: This command establishes a new TCP connection to the specified <destination> at the specified < port no>. ");
+		System.out.println("List: Display a numbered list of all the connections this process is part of");
+		System.out.println("Terminate: This command will terminate the connection listed under the specified number");
+		System.out.println("Send: This will send the message to the host on the connection that is designated");
+		System.out.println("Exit: Close all connections and terminate this process");
+	}
 
-    public static String getIp() throws Exception {
+    public static void getIp() throws Exception {
         URL findIP = new URL("http://checkip.amazonaws.com");
         BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(
                     findIP.openStream()));
-            String ip = in.readLine();
-            return ip;
+            ip = in.readLine();
+            System.out.println("My IP is: " + ip);
         } finally {
             if (in != null) {
                 try {
@@ -41,6 +95,82 @@ public class Chat {
                 }
             }
         }
+    }
+    
+    public static void getPort(){
+    	System.out.println("My port is: " + port);
+    }
+    
+    public static void connect(){
+    	Scanner sc = new Scanner(System.in);
+    	System.out.println("Enter the IP of the server:");
+    	String serverIp = sc.nextLine();
+    	System.out.println("Enter the port of the server:");
+    	int serverPort = sc.nextInt();
+    	Thread m = new Client(serverPort , serverIp);
+		m.start();
+		System.out.println("Client Thread Started with " + serverIp + ":" + serverPort);
+		sc.close();
+    }
+    
+    public static void getList(){
+    	int id = 0;
+    	System.out.println("ID	Address");
+    	for(Socket s: socketList){
+    		System.out.println(id + "	" + s.getRemoteSocketAddress());
+    		id++;
+    	}
+    }
+    
+    public static void terminate(){
+    	Scanner sc = new Scanner(System.in);
+    	System.out.println("Select the index of the socket you wish to terminate:");
+    	int index = sc.nextInt();
+    	Socket s = socketList.get(index);
+    	try {
+			s.close();
+		} catch (IOException e) {
+			System.out.println("Could not terminate connection.");
+		}
+    	sc.close();
+    }
+    
+    public static void send(){
+    	Scanner sc = new Scanner(System.in);
+    	System.out.println("Select the index of the socket you wish to send a message to:");
+    	int index = sc.nextInt();
+    	Socket s = socketList.get(index);
+    	
+    	//Send the message to the server
+    	try{
+	        OutputStream os = s.getOutputStream();
+	        OutputStreamWriter osw = new OutputStreamWriter(os);
+	        @SuppressWarnings("unused")
+			 BufferedWriter bw = new BufferedWriter(osw);
+	      
+	        System.out.println("Write a message to send"); 
+	        String message = sc.nextLine();
+	        sc.close();
+	        
+	        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+	        out.println(message);
+	        
+	        System.out.println("Message sent to the server " + s.getRemoteSocketAddress() + ": " + message);
+    	}catch(IOException e){
+    		System.out.println("Message failed to sent.");
+    	}
+    }
+    
+    public static void endProgram(){
+    	for(Socket s: socketList){
+    		try {
+				s.close();
+			} catch (IOException e) {
+				System.out.println("Failed to close connection");
+			}
+    	}
+    	System.exit(-1);
+    	
     }
 }
 
