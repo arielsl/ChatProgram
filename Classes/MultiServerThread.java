@@ -8,6 +8,7 @@ public class MultiServerThread extends Thread{
 	 public MultiServerThread(Socket socket) {
 		 super("MultiServerThread");
 		 this.socket = socket;
+		 Chat.socketList.add(socket);
 	 }
 	 
 	 public void run() {
@@ -25,3 +26,4 @@ public class MultiServerThread extends Thread{
 	 }
 
 }
+
