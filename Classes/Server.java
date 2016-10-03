@@ -14,15 +14,15 @@ public class Server extends Thread{
 	}
 	 
 	public void run() {
-		System.out.println("Create a new Server socket and a new socket thread.");
-		try (ServerSocket listener = new ServerSocket(port);){  
+		System.out.println("Creation of a new Server socket and a new socket thread.");
+		 try (ServerSocket listener = new ServerSocket(port);){  
              while(listening){
             	 new MultiServerThread(listener.accept()).start();
              }
          }
          catch (IOException e) {
         	 System.out.println("Server Socket crreation failed.");
-             e.printStackTrace();
          }
      }
 }
+
