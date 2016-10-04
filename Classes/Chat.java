@@ -1,4 +1,4 @@
-package chat;
+package Classes;
 
 import java.io.*;
 import java.net.*;
@@ -12,7 +12,19 @@ public class Chat {
 	private static Scanner sc;
 
 	public static void main(String[] args) {
-		port = Integer.parseInt(args[0]);
+		boolean portFound = false;
+		System.out.println("Enter port:");
+		sc = new Scanner(System.in);
+		while(!portFound){
+			if(sc.hasNextInt()){
+				port = sc.nextInt();
+				if(port >= 1024 && port < 65535)
+					portFound = true;
+			}
+			sc.nextLine();
+			if(!portFound)
+				System.out.println("Please enter a valid port number");
+		}
 		Thread t = new Server(port);
 		t.start();
 		try {
@@ -35,7 +47,11 @@ public class Chat {
 			System.out.println("6. Terminate");
 			System.out.println("7. Send");
 			System.out.println("8. Exit");
-			
+
+			while(!sc.hasNextInt()){
+				sc.nextLine();
+				System.out.println("Please enter a valid number");
+			}
 			choice = sc.nextInt();
 			sc.nextLine();
 			
@@ -117,54 +133,76 @@ public class Chat {
     }
     
     public static void getList(){
-    	int id = 0;
-    	System.out.println("ID	Address");
-    	for(Socket s: socketList){
-    		System.out.println(id + "	" + s.getRemoteSocketAddress());
-    		id++;
-    	}
+		if(socketList.size() > 0) {
+			int id = 0;
+			System.out.println("ID	Address");
+			for (Socket s : socketList) {
+				System.out.println(id + "	" + s.getRemoteSocketAddress());
+				id++;
+			}
+		}
+		else {
+			System.out.println("No Connections");
+		}
     }
     
     public static void terminate(){
-    	
-    	System.out.println("Select the index of the socket you wish to terminate:");
-    	int index = sc.nextInt();
-    	sc.nextLine();
-    	Socket s = socketList.get(index);
-    	try {
-			s.close();
-			socketList.remove(index);
-		} catch (IOException e) {
-			System.out.println("Could not terminate connection.");
+    	if(socketList.size() > 0) {
+			System.out.println("Select the index of the socket you wish to terminate:");
+			sc.nextLine();
+			if(!sc.hasNextInt()){
+				int index = sc.nextInt();
+				sc.nextLine();
+				if(index > -1 && index < socketList.size()) {
+					Socket s = socketList.get(index);
+					try {
+						s.close();
+						socketList.remove(index);
+					} catch (IOException e) {
+						System.out.println("Could not terminate connection.");
+					}
+				}
+				else System.out.println("Please insert valid index");
+			}
+			else System.out.println("Please insert valid index");
 		}
-    	
+		else System.out.println("There is no sockets to terminate");
     }
     
     public static void send(){
-    	
-    	System.out.println("Select the index of the socket you wish to send a message to:");
-    	int index = sc.nextInt();
-    	sc.nextLine();
-    	Socket s = socketList.get(index);
-    	
-    	//Send the message to the server
-    	try{
-	        OutputStream os = s.getOutputStream();
-	        OutputStreamWriter osw = new OutputStreamWriter(os);
-	        @SuppressWarnings("unused")
-			 BufferedWriter bw = new BufferedWriter(osw);
-	      
-	        System.out.println("Write a message to send:"); 
-	        String message = sc.nextLine();
-	        
-	        
-	        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-	        out.println(message);
-	        
-	        System.out.println("Message sent to the server " + s.getRemoteSocketAddress() + ": " + message);
-    	}catch(IOException e){
-    		System.out.println("Message failed to sent.");
-    	}
+    	if(socketList.size() > 0) {
+			System.out.println("Select the index of the socket you wish to send a message to:");
+//			sc.nextLine();
+			if(sc.hasNextInt()) {
+				int index = sc.nextInt();
+				sc.nextLine();
+				if(index > -1 && index < socketList.size()) {
+					Socket s = socketList.get(index);
+					//Send the message to the server
+					try {
+						OutputStream os = s.getOutputStream();
+						OutputStreamWriter osw = new OutputStreamWriter(os);
+						@SuppressWarnings("unused")
+						BufferedWriter bw = new BufferedWriter(osw);
+
+						System.out.println("Write a message to send:");
+						//sc = new Scanner(System.in);
+						String message = sc.nextLine();
+
+
+						PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+						out.println(message);
+
+						System.out.println("Message sent to the server " + s.getRemoteSocketAddress() + ": " + message);
+					} catch (IOException e) {
+						System.out.println("Message failed to sent.");
+					}
+				}
+				else System.out.println("Please insert valid index");
+			}
+			else System.out.println("Please insert valid index");
+		}
+		else System.out.println("There are no connections");
     }
     
     public static void endProgram(){
