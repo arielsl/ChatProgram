@@ -12,9 +12,12 @@ public class MultiServerThread extends Thread{
 		 String remoteString = socket.getRemoteSocketAddress().toString();
 		 String[] remoteAddress = remoteString.split(":");
 		 int remotePort = Integer.parseInt(remoteAddress[1]);
+		 StringBuilder sb = new StringBuilder(remoteAddress[0]);
+		 sb.deleteCharAt(0);
+		 String remoteIp = sb.toString();
 		 try {
-			Socket remote = new Socket(remoteAddress[0], remotePort);
-			System.out.println("Client with address " + remoteAddress[0] + ":" + remotePort + " connected to you");
+			Socket remote = new Socket(remoteIp, remotePort);
+			System.out.println("Client with address " + remoteIp + ":" + remotePort + " connected to you");
 			Chat.socketList.add(remote);
 		} catch (UnknownHostException e) {
 			System.out.println("Error while accepting connection");
@@ -41,4 +44,5 @@ public class MultiServerThread extends Thread{
 	 }
 
 }
+
 
