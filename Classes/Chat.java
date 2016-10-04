@@ -1,4 +1,4 @@
-package Classes;
+package chat;
 
 import java.io.*;
 import java.net.*;
@@ -27,11 +27,7 @@ public class Chat {
 		}
 		Thread t = new Server(port);
 		t.start();
-		try {
-			getIp();
-		} catch (Exception e) {
-			System.out.println("Could not retreat IP");
-		}
+		getIp();
 		getPort();
 		System.out.println("Server created at address: " + ip + ":" + port);
 		
@@ -74,7 +70,7 @@ public class Chat {
 					break;
 				case 7: send();
 					break;
-				case 8: endProgram();
+				case 8: System.exit(-1);
 					break;
 				default: System.out.println("Not a valid command.");
 					break;	
@@ -96,22 +92,13 @@ public class Chat {
 		System.out.println("Exit: Close all connections and terminate this process");
 	}
 
-    public static void getIp() throws Exception {
-        URL findIP = new URL("http://checkip.amazonaws.com");
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(
-                    findIP.openStream()));
-            ip = in.readLine();
+    public static void getIp(){
+    	try {
+            InetAddress ipAddr = InetAddress.getLocalHost();
+            ip = ipAddr.getHostAddress();
             System.out.println("My IP is: " + ip);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        } catch (UnknownHostException ex) {
+            System.out.println("IP extraction failed");
         }
     }
     
@@ -149,24 +136,31 @@ public class Chat {
     public static void terminate(){
     	if(socketList.size() > 0) {
 			System.out.println("Select the index of the socket you wish to terminate:");
-			sc.nextLine();
-			if(!sc.hasNextInt()){
+			if(sc.hasNextInt()){
 				int index = sc.nextInt();
-				sc.nextLine();
 				if(index > -1 && index < socketList.size()) {
 					Socket s = socketList.get(index);
 					try {
 						s.close();
 						socketList.remove(index);
+						sc.nextLine();
 					} catch (IOException e) {
 						System.out.println("Could not terminate connection.");
 					}
 				}
-				else System.out.println("Please insert valid index");
+				else {
+					System.out.println("Please insert valid index");
+					sc.nextLine();
+				}
+			}else{
+				System.out.println("Please insert valid index");
+				sc.nextLine();
 			}
-			else System.out.println("Please insert valid index");
+		}else{
+			System.out.println("There is no sockets to terminate");
+			sc.nextLine();
 		}
-		else System.out.println("There is no sockets to terminate");
+		
     }
     
     public static void send(){
@@ -205,15 +199,4 @@ public class Chat {
 		else System.out.println("There are no connections");
     }
     
-    public static void endProgram(){
-    	for(Socket s: socketList){
-    		try {
-				s.close();
-			} catch (IOException e) {
-				System.out.println("Failed to close connection");
-			}
-    	}
-    	System.exit(-1);
-    	
-    }
 }
