@@ -8,7 +8,7 @@ public class Chat {
 	
 	public static String ip;
 	public static int port;
-	static ArrayList<Socket> socketList = new ArrayList<Socket>();
+	public static List<Socket> socketList = new ArrayList<Socket>();
 	private static Scanner sc;
 
 	public static void main(String[] args) {
@@ -37,6 +37,7 @@ public class Chat {
 			System.out.println("8. Exit");
 			
 			choice = sc.nextInt();
+			sc.nextLine();
 			
 			switch(choice){
 				case 1: getHelp();
@@ -106,8 +107,10 @@ public class Chat {
     	
     	System.out.println("Enter the IP of the server:");
     	String serverIp = sc.next();
+    	sc.nextLine();
     	System.out.println("Enter the port of the server:");
     	int serverPort = sc.nextInt();
+    	sc.nextLine();
     	Client m = new Client(serverPort , serverIp);
 		m.connectSocket();
 		
@@ -126,6 +129,7 @@ public class Chat {
     	
     	System.out.println("Select the index of the socket you wish to terminate:");
     	int index = sc.nextInt();
+    	sc.nextLine();
     	Socket s = socketList.get(index);
     	try {
 			s.close();
@@ -140,6 +144,7 @@ public class Chat {
     	
     	System.out.println("Select the index of the socket you wish to send a message to:");
     	int index = sc.nextInt();
+    	sc.nextLine();
     	Socket s = socketList.get(index);
     	
     	//Send the message to the server
@@ -149,8 +154,8 @@ public class Chat {
 	        @SuppressWarnings("unused")
 			 BufferedWriter bw = new BufferedWriter(osw);
 	      
-	        System.out.println("Write a message to send"); 
-	        String message = sc.next();
+	        System.out.println("Write a message to send:"); 
+	        String message = sc.nextLine();
 	        
 	        
 	        PrintWriter out = new PrintWriter(s.getOutputStream(), true);
@@ -174,4 +179,3 @@ public class Chat {
     	
     }
 }
-
