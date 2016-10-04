@@ -14,11 +14,9 @@ public class Client {
 	}
 	
 	 public void connectSocket() {
-		 System.out.println("Trying to create and connect a new socket to a server.");
 		 try {
 			 Socket s = new Socket(host, port);
              Chat.socketList.add(s);
-             System.out.println("Connection status: " + s.isConnected());
              System.out.println("Connected to IP: " + s.getRemoteSocketAddress().toString());
          	}
          catch (IOException e){
