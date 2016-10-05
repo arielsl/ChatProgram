@@ -1,4 +1,4 @@
-package Classes;
+package chat;
 
 import java.io.*;
 import java.net.*;
