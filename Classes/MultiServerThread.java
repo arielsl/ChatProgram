@@ -9,34 +9,21 @@ public class MultiServerThread extends Thread{
 	 public MultiServerThread(Socket socket) {
 		 super("MultiServerThread");
 		 this.socket = socket;
-		 String remoteString = socket.getRemoteSocketAddress().toString();
-		 String[] remoteAddress = remoteString.split(":");
-		 int remotePort = Integer.parseInt(remoteAddress[1]);
-		 StringBuilder sb = new StringBuilder(remoteAddress[0]);
-		 sb.deleteCharAt(0);
-		 String remoteIp = sb.toString();
-		 try {
-			Socket remote = new Socket(remoteIp, remotePort);
-			System.out.println("Client with address " + remoteIp + ":" + remotePort + " connected to you");
-			Chat.socketList.add(remote);
-		} catch (UnknownHostException e) {
-			System.out.println("Error while accepting connection");
-		} catch (IOException e) {
-			System.out.println("Error while accepting connection");
-		}
-		 
 	 }
 	 
 	 public void run() {
-		 int reading = 1;
-		 while(reading > -1){
+		 
+		 while(true){
 			 try {
-				reading = socket.getInputStream().read();
+				
 				InputStream is = socket.getInputStream();
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
 				message = br.readLine();
-				System.out.println("Message received from client " + socket.getRemoteSocketAddress().toString() + " is: " + message); 
+				if (message != null){
+					System.out.println("Message received from client " + socket.getRemoteSocketAddress().toString() + " is: " + message);
+				}
+				 
 				} catch(Exception e){
 				System.out.println("Error while reading the message sent.");
 			 }
@@ -44,5 +31,4 @@ public class MultiServerThread extends Thread{
 	 }
 
 }
-
 
